@@ -3,6 +3,6 @@
 After making any changes to a game, existing or new, verify:
 
 - [ ] It has `title` field.
-- [ ] It has `appid` field.
+- [ ] It has `app_id` field.
 - [ ] It has `audios` field.
 - [ ] `audios` is a list of URLs and each URL is a valid YouTube link and publicly accessible.
