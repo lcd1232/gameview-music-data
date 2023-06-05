@@ -1,12 +1,11 @@
 import json
 import os
+import typing
 
 import yaml
 
 
-def convert_yaml_to_json(yaml_file):
-    with open(yaml_file, "r") as f:
-        yaml_data = yaml.safe_load(f)
+def convert_yaml_to_json(yaml_data) -> typing.Tuple[str, typing.Dict[str, str]]:
     app_id = yaml_data["app_id"]
     audio_url = yaml_data["audios"][0]["url"]
     return str(app_id), {
@@ -26,8 +25,13 @@ if __name__ == "__main__":
     files.sort()
     for file_name in files:
         file_path = os.path.join(directory, file_name)
+        with open(file_path, "r") as f:
+            yaml_data = yaml.load(f)
+        if yaml_data["no_soundtrack"]:
+            # This game might be so unpopular that it doesn't even have a soundtrack
+            continue
         app_id, data = convert_yaml_to_json(file_path)
         json_data["app_id"][app_id] = data
     with open(os.path.join("v1", "data.json"), "w") as f:
-        json.dump(json_data, f, indent=2)
+        json.dump(json_data, f, separators=(",", ":"))
         f.write("\n")  # Add a newline character at the end of the file

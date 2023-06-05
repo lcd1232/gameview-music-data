@@ -1,30 +1,37 @@
-import requests
-from bs4 import BeautifulSoup
-from urllib.parse import quote
-from requests_ratelimiter import LimiterSession
-import time
-import re
-import json
-import datetime
-import typing
-import yaml
-import os
 import argparse
+import datetime
+import json
+import os
+import re
+import time
+import typing
+from urllib.parse import quote
+
+import requests
+import yaml
+from requests_ratelimiter import LimiterSession
 
 session = LimiterSession(per_minute=40)
 start = time.time()
 
+
 def write_to_file(gameid: str, game_name: str, youtube_link: str) -> None:
     with open(os.path.join("games", f"{gameid}.yml"), "w") as f:
-        yaml.dump({
-            "app_id": gameid,
-            "name": game_name,
-            "audios": [
-                {
-                    "url": youtube_link,
-                },
-            ],
-        }, f, sort_keys=False, explicit_start=True)
+        yaml.dump(
+            {
+                "app_id": gameid,
+                "name": game_name,
+                "audios": [
+                    {
+                        "url": youtube_link,
+                    },
+                ],
+            },
+            f,
+            sort_keys=False,
+            explicit_start=True,
+        )
+
 
 def text_to_timedelta(text: str) -> datetime.timedelta:
     splits = text.split(":")
@@ -33,9 +40,12 @@ def text_to_timedelta(text: str) -> datetime.timedelta:
         return datetime.timedelta(minutes=int(minutes), seconds=int(seconds))
     elif len(splits) == 3:
         hours, minutes, seconds = splits
-        return datetime.timedelta(hours=int(hours), minutes=int(minutes), seconds=int(seconds))
+        return datetime.timedelta(
+            hours=int(hours), minutes=int(minutes), seconds=int(seconds)
+        )
     else:
         raise ValueError(f"Invalid time format: {text}")
+
 
 def get_youtube_link(game_name) -> typing.Optional[str]:
     search_query = f"{game_name} main theme"
@@ -51,7 +61,9 @@ def get_youtube_link(game_name) -> typing.Optional[str]:
         return None
     data = result[0]
     data = json.loads(data)
-    for content in data["contents"]["twoColumnSearchResultsRenderer"]["primaryContents"]["sectionListRenderer"]["contents"]:
+    for content in data["contents"]["twoColumnSearchResultsRenderer"][
+        "primaryContents"
+    ]["sectionListRenderer"]["contents"]:
         if "itemSectionRenderer" in content:
             for item in content["itemSectionRenderer"]["contents"]:
                 if "videoRenderer" in item:
@@ -70,10 +82,14 @@ def get_youtube_link(game_name) -> typing.Optional[str]:
                     return f"https://www.youtube.com/watch?v={video_id}"
     return None
 
+
 def get_app_information(app_id: int) -> dict:
-    response = session.get(f"https://store.steampowered.com/api/appdetails?appids={app_id}")
+    response = session.get(
+        f"https://store.steampowered.com/api/appdetails?appids={app_id}"
+    )
     data: dict = response.json()
     return data[str(app_id)]
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -81,12 +97,16 @@ def main():
     args = parser.parse_args()
     passed: bool = False
 
-    response = session.get("http://api.steampowered.com/ISteamApps/GetAppList/v0002/?format=json")
+    response = session.get(
+        "http://api.steampowered.com/ISteamApps/GetAppList/v0002/?format=json"
+    )
     data: dict = response.json()
-    for app in data["applist"]["apps"]:
+    print(f"Found {len(data['applist']['apps'])} apps")
+    for i, app in enumerate(data["applist"]["apps"]):
         if args.start is not None:
             if not passed:
                 if app["appid"] == args.start:
+                    print(f"Skipped {i} apps")
                     passed = True
                 else:
                     continue
@@ -108,6 +128,6 @@ def main():
             write_to_file(app_id, app_name, youtube_link)
             print(f"Wrote {app_id} - {app_name}")
 
+
 if __name__ == "__main__":
     main()
-
