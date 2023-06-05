@@ -28,7 +28,7 @@ if __name__ == "__main__":
         with open(file_path, "r") as f:
             yaml_data = yaml.load(f)
         if yaml_data["no_soundtrack"]:
-            # This game might be so unpopular that it doesn't even have a soundtrack
+            # This game might be so unpopular or outdated that it doesn't have a soundtrack
             continue
         app_id, data = convert_yaml_to_json(file_path)
         json_data["app_id"][app_id] = data
