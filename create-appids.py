@@ -99,7 +99,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    # s = Search("zelda live")
-    # print(len(s.results))
-    # for result in s.results:
-    #     print(result, result.title, result.length, result.metadata)
