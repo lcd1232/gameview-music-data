@@ -9,7 +9,7 @@ packages = [{include = "gameview_music_data"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-PyYAML = "^6.0"
+PyYAML = "~6"
 requests = "~2"
 beautifulsoup4 = "~4"
 requests-ratelimiter = "~0"
