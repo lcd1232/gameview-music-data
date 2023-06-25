@@ -20,6 +20,7 @@ def write_to_file(gameid: str, game_name: str, youtube_link: str) -> None:
                 "audios": [
                     {
                         "url": youtube_link,
+                        "checked": False,
                     },
                 ],
             },
