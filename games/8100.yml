@@ -1,0 +1,6 @@
+---
+app_id: 8100
+name: 'Conflict: Denied Ops'
+audios:
+- url: https://youtube.com/watch?v=6kESzWDBPTs
+  checked: false
